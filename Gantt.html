@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cronograma General de Trabajo de Tesis</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f7f6;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 40px;
+            font-size: 2.5em;
+            position: relative;
+        }
+
+        h1::after {
+            content: '';
+            display: block;
+            width: 80px;
+            height: 4px;
+            background: #3498db;
+            margin: 15px auto 0;
+            border-radius: 2px;
+        }
+
+        .phase {
+            margin-bottom: 40px;
+            border-left: 5px solid;
+            padding-left: 20px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .phase.green { border-color: #2ecc71; }
+        .phase.yellow { border-color: #f1c40f; }
+        .phase.red { border-color: #e74c3c; }
+
+        .phase-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            cursor: pointer;
+            padding: 10px 0;
+        }
+
+        .phase-header h2 {
+            margin: 0;
+            font-size: 1.8em;
+            color: #2c3e50;
+            flex-grow: 1;
+        }
+
+        .phase-header .evaluation-date {
+            font-size: 0.9em;
+            color: #7f8c8d;
+            background-color: #ecf0f1;
+            padding: 5px 10px;
+            border-radius: 5px;
+            margin-left: 20px;
+            white-space: nowrap;
+        }
+
+        .phase-header .toggle-icon {
+            font-size: 1.5em;
+            margin-left: 15px;
+            transition: transform 0.3s ease;
+        }
+
+        .phase-header.expanded .toggle-icon {
+            transform: rotate(90deg);
+        }
+
+        .phase-content {
+            padding-left: 15px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out;
+            background-color: #fcfcfc;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        .phase-content.expanded {
+            max-height: 2000px; /* Suficientemente grande para contener todo el contenido */
+            padding-bottom: 20px;
+        }
+
+        .week {
+            background-color: #ffffff;
+            border: 1px solid #e0e6e9;
+            margin: 15px 0;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .week:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .week-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 1px dashed #e0e6e9;
+            padding-bottom: 10px;
+            cursor: pointer;
+        }
+
+        .week-header h3 {
+            margin: 0;
+            color: #34495e;
+            font-size: 1.4em;
+            flex-grow: 1;
+        }
+
+        .week-header .date {
+            font-weight: bold;
+            color: #2980b9;
+            background-color: #e8f6fd;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9em;
+        }
+
+        .week-header .toggle-icon {
+            font-size: 1.2em;
+            margin-left: 10px;
+            color: #7f8c8d;
+            transition: transform 0.3s ease;
+        }
+
+        .week-header.expanded .toggle-icon {
+            transform: rotate(90deg);
+        }
+
+        .week-details {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-out;
+            padding-top: 5px;
+        }
+
+        .week-details.expanded {
+            max-height: 500px; /* Suficientemente grande para el contenido de la semana */
+        }
+
+        .week-details h4 {
+            color: #2980b9;
+            margin-top: 15px;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+
+        .week-details ul {
+            list-style: none;
+            padding: 0;
+            margin-left: 15px;
+        }
+
+        .week-details ul li {
+            position: relative;
+            padding-left: 25px;
+            margin-bottom: 8px;
+            color: #555;
+        }
+
+        .week-details ul li::before {
+            content: '•';
+            color: #2ecc71;
+            font-size: 1.2em;
+            position: absolute;
+            left: 0;
+            top: -2px;
+        }
+
+        .deliverable {
+            background-color: #ecf0f1;
+            border-left: 4px solid #3498db;
+            padding: 12px 15px;
+            margin-top: 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .summary {
+            margin-top: 50px;
+            padding: 30px;
+            background-color: #e8f6fd;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
+        }
+
+        .summary h2 {
+            text-align: center;
+            color: #2980b9;
+            margin-bottom: 25px;
+            font-size: 2em;
+        }
+
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .summary-table th, .summary-table td {
+            border: 1px solid #dcdcdc;
+            padding: 12px 15px;
+            text-align: left;
+            font-size: 1.1em;
+        }
+
+        .summary-table th {
+            background-color: #3498db;
+            color: white;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .summary-table tr:nth-child(even) {
+            background-color: #f7fcfd;
+        }
+
+        .summary-table tr:hover {
+            background-color: #eaf6fc;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            h1 {
+                font-size: 2em;
+            }
+            .phase-header h2 {
+                font-size: 1.5em;
+            }
+            .phase-header .evaluation-date {
+                font-size: 0.8em;
+                margin-left: 10px;
+                padding: 3px 8px;
+            }
+            .week-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .week-header .date {
+                margin-top: 10px;
+            }
+            .summary-table th, .summary-table td {
+                padding: 8px 10px;
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Cronograma General de Trabajo de Tesis</h1>
+
+        <div class="phase green" id="phase1">
+            <div class="phase-header" onclick="togglePhase('phase1')">
+                <h2>🟢 FASE 1 — Pre-Capítulo 1</h2>
+                <span class="evaluation-date">Entrega: 4–13 de marzo</span>
+                <span class="toggle-icon">></span>
+            </div>
+            <div class="phase-content">
+                <div class="week">
+                    <div class="week-header" onclick="toggleWeek(this)">
+                        <h3>🔹 Semana 1</h3>
+                        <span class="date">📆 17 – 23 febrero</span>
+                        <span class="toggle-icon">></span>
+                    </div>
+                    <div class="week-details">
+                        <h4>Objetivo semanal:</h4>
+                        <p>Tener redactado y revisado el 70% de la primera parte del documento.</p>
+                        <h4>Actividades:</h4>
+                        <ul>
+                            <li>Redacción final de la Introducción</li>
+                            <li>Redacción formal de la Justificación (técnica, económica y ambiental)</li>
+                            <li>Ajuste definitivo de Objetivo General y Objetivos Específicos</li>
+                            <li>Redacción final de la Hipótesis</li>
+                            <li>Redacción de Alcances y Limitaciones</li>
+                            <li>Revisión de coherencia interna (alineación preguntas–objetivos–hipótesis)</li>
+                            <li>Organización de referencias en Zotero</li>
+                        </ul>
+                        <p class="deliverable">Entregable medible: Documento preliminar completo al 70%.</p>
+                    </div>
+                </div>
+
+                <div class="week">
+                    <div class="week-header" onclick="toggleWeek(this)">
+                        <h3>🔹 Semana 2</h3>
+                        <span class="date">📆 24 febrero – 2 marzo</span>
+                        <span class="toggle-icon">></span>
+                    </div>
+                    <div class="week-details">
+                        <h4>Objetivo semanal:</h4>
+                        <p>Documento terminado y listo para revisión.</p>
+                        <h4>Actividades:</h4>
+                        <ul>
+                            <li>Corrección de estilo académico</li>
+                            <li>Revisión ortográfica y técnica</li>
+                            <li>Inserción correcta de citas y bibliografía</li>
+                            <li>Ajuste de formato institucional</li>
+                            <li>Generación de índice automático</li>
+                            <li>Revisión final PDF</li>
+                        </ul>
+                        <p class="deliverable">Entregable medible: Versión final lista para entregar (100%).</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="phase yellow" id="phase2">
+            <div class="phase-header" onclick="togglePhase('phase2')">
+                <h2>🟡 FASE 2 — Capítulo 1</h2>
+                <span class="evaluation-date">Estado del Arte + Marco Teórico | Evaluación: 4 – 11 mayo</span>
+                <span class="toggle-icon">></span>
+            </div>
+            <div class="phase-content">
+                <div class="week">
+                    <div class="week-header" onclick="toggleWeek(this)">
+                        <h3>🔹 Semana 3</h3>
+                        <span class="date">📆 3 – 9 marzo</span>
+                        <span class="toggle-icon">></span>
+                    </div>
+                    <div class="week-details">
+                        <h4>Objetivo semanal:</h4>
+                        <p>Estructura completa del Estado del Arte.</p>
+                        <h4>Actividades:</h4>
+                        <ul>
+                            <li>Búsqueda de artículos científicos (SPWM vs SVPWM)</li>
+                            <li>Búsqueda de investigaciones sobre inversores multiconfiguración</li>
+                            <li>Selección de 8–12 referencias técnicas</li>
+                            <li>Organización temática del capítulo</li>
+                        </ul>
+                        <p class="deliverable">Entregable medible: Esquema estructurado del capítulo con referencias clasificadas.</p>
+                    </div>
+                </div>
+
+                <div class="week">
+                    <div class="week-header" onclick="toggleWeek(this)">
+                        <h3>🔹 Semana 4</h3>
+                        <span class="date">📆 10 – 16 marzo</span>
+                        <span class="toggle-icon">></span>
+                    </div>
+                    <div class="week-details">
+                        <h4>Objetivo semanal:</h4>
+                        <p>Redacción del 50% del Estado del Arte.</p>
+                        <h4>Actividades:</h4>
+                        <ul>
+                            <li>Redacción sección SPWM</li>
+                            <li>Redacción sección SVPWM</li>
+                            <li>Redacción comparativas técnicas reportadas</li>
+                            <li>Integración de citas académicas</li>
+                        </ul>
+                        <p class="deliverable">Entregable medible: Estado del arte al 50%.</p>
+                    </div>
+                </div>
+
+                <div class="week">
+                    <div class="week-header" onclick="toggleWeek(this)">
+                        <h3>🔹 Semana 5</h3>
+                        <span class="date">📆 17 – 23 marzo</span>
+                        <span class="toggle-icon">></span>
+                    </div>
+                    <div class="week-details">
+                        <h4>Objetivo semanal:</h4>
+                        <p>Estado del Arte terminado.</p>
+                        <h4>Actividades:</h4>
+                        <ul>
+                            <li>Redacción final</li>
+                            <li>Comparativa crítica</li>
+                            <li>Identificación del vacío tecnológico</li>
+                            <li>Revisión de citas</li>
+                        </ul>
+                        <p class="deliverable">Entregable medible: Estado del Arte completo.</p>
+                    </div>
+                </div>
+
+                <div class="week">
+                    <div class="week-header" onclick="toggleWeek(this)">
+                        <h3>🔹 Semana 6</h3>
+                        <span class="date">📆 24 – 30 marzo</span>
+                        <span class="toggle-icon">></span>
+                    </div>
+                    <div class="week-details">
+                        <h4>Objetivo semanal:</h4>
+                        <p>Estructura del Marco Teórico.</p>
+                        <h4>Actividades:</h4>
+                        <ul>
+                            <li>Definir secciones:</li>
+                            <ul>
+                                <li>Conversión DC-AC</li>
+                                <li>Modulación</li>
+                                <li>THD</li>
+                                <li>FP</li>
+                                <li>Regulación</li>
+                                <li>Sistemas trifásicos</li>
+                            </ul>
+                            <li>Organización de ecuaciones y fundamentos</li>
+                        </ul>
+                        <p class="deliverable">Entregable medible: Esquema formal del marco teórico.</p>
+                    </div>
+                </div>
+
+                <div class="week">
+                    <div class="week-header" onclick="toggleWeek(this)">
+                        <h3>🔹 Semana 7</h3>
+                        <span class="date">📆 31 marzo – 6 abril</span>
+                        <span class="toggle-icon">></span>
+                    </div>
+                    <div class="week-details">
+                        <h4>Objetivo semanal:</h4>
+                        <p>Redacción 50% del Marco Teórico.</p>
+                        <p class="deliverable">Entregable medible: Avance del 50% del Marco Teórico.</p>
+                    </div>
+                </div>
+
+                <div class="week">
+                    <div class="week-header" onclick="toggleWeek(this)">
+                        <h3>🔹 Semana 8</h3>
+                        <span class="date">📆 7 – 13 abril</span>
+                        <span class="toggle-icon">></span>
+                    </div>
+                    <div class="week-details">
+                        <h4>Objetivo semanal:</h4>
+                        <p>Marco Teórico completo.</p>
+                        <p class="deliverable">Entregable medible: Marco Teórico completo.</p>
+                    </div>
+                </div>
+
+                <div class="week">
+                    <div class="week-header" onclick="toggleWeek(this)">
+                        <h3>🔹 Semana 9</h3>
+                        <span class="date">📆 14 – 20 abril</span>
+                        <span class="toggle-icon">></span>
+                    </div>
+                    <div class="week-details">
+                        <h4>Objetivo semanal:</h4>
+                        <p>Revisión técnica profunda de Capítulo 1.</p>
+                        <p class="deliverable">Entregable medible: Capítulo 1 revisado técnicamente.</p>
+                    </div>
+                </div>
+
+                <div class="week">
+                    <div class="week-header" onclick="toggleWeek(this)">
+                        <h3>🔹 Semana 10</h3>
+                        <span class="date">📆 21 – 27 abril</span>
+                        <span class="toggle-icon">></span>
+                    </div>
+                    <div class="week-details">
+                        <h4>Objetivo semanal:</h4>
+                        <p>Correcciones finales y formato institucional.</p>
+                        <p class="deliverable">Entregable medible: Capítulo 1 con correcciones y formato listo.</p>
+                    </div>
+                </div>
+
+                <div class="week">
+                    <div class="week-header" onclick="toggleWeek(this)">
+                        <h3>🔹 Semana 11</h3>
+                        <span class="date">📆 28 abril – 3 mayo</span>
+                        <span class="toggle-icon">></span>
+                    </div>
+                    <div class="week-details">
+                        <h4>Objetivo semanal:</h4>
+                        <p>Capítulo 1 listo para evaluación.</p>
+                        <p class="deliverable">Entregable medible: Capítulo 1 finalizado para evaluación.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="phase red" id="phase3">
+            <div class="phase-header" onclick="togglePhase('phase3')">
+                <h2>🔴 FASE 3 — Metodología</h2>
+                <span class="evaluation-date">Evaluación: 15 – 22 mayo</span>
+                <span class="toggle-icon">></span>
+            </div>
+            <div class="phase-content">
+                <div class="week">
+                    <div class="week-header" onclick="toggleWeek(this)">
+                        <h3>🔹 Semana 12</h3>
+                        <span class="date">📆 4 – 10 mayo</span>
+                        <span class="toggle-icon">></span>
+                    </div>
+                    <div class="week-details">
+                        <h4>Objetivo semanal:</h4>
+                        <p>Diseño estructural de la metodología.</p>
+                        <h4>Actividades:</h4>
+                        <ul>
+                            <li>Diagrama de bloques del sistema</li>
+                            <li>Definición de variables a medir</li>
+                            <li>Diseño experimental</li>
+                            <li>Procedimiento de pruebas</li>
+                        </ul>
+                        <p class="deliverable">Entregable medible: Diseño de metodología estructurado.</p>
+                    </div>
+                </div>
+
+                <div class="week">
+                    <div class="week-header" onclick="toggleWeek(this)">
+                        <h3>🔹 Semana 13</h3>
+                        <span class="date">📆 11 – 17 mayo</span>
+                        <span class="toggle-icon">></span>
+                    </div>
+                    <div class="week-details">
+                        <h4>Objetivo semanal:</h4>
+                        <p>Redacción completa del capítulo de metodología.</p>
+                        <p class="deliverable">Entregable medible: Capítulo de metodología completo.</p>
+                    </div>
+                </div>
+
+                <div class="week">
+                    <div class="week-header" onclick="toggleWeek(this)">
+                        <h3>🔹 Semana 14</h3>
+                        <span class="date">📆 18 – 22 mayo</span>
+                        <span class="toggle-icon">></span>
+                    </div>
+                    <div class="week-details">
+                        <h4>Objetivo semanal:</h4>
+                        <p>Corrección final y preparación de evaluación.</p>
+                        <p class="deliverable">Entregable medible: Metodología corregida y lista para evaluación.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="summary">
+            <h2>📊 Resumen por Evaluación</h2>
+            <table class="summary-table">
+                <thead>
+                    <tr>
+                        <th>Evaluación</th>
+                        <th>Fecha</th>
+                        <th>Debes tener</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1ª</td>
+                        <td>4–13 marzo</td>
+                        <td>Introducción + Justificación + Objetivos + Hipótesis + Alcances</td>
+                    </tr>
+                    <tr>
+                        <td>2ª</td>
+                        <td>4–11 mayo</td>
+                        <td>Capítulo 1 completo</td>
+                    </tr>
+                    <tr>
+                        <td>3ª</td>
+                        <td>15–22 mayo</td>
+                        <td>Metodología completa</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        function togglePhase(phaseId) {
+            const phase = document.getElementById(phaseId);
+            const content = phase.querySelector('.phase-content');
+            const header = phase.querySelector('.phase-header');
+
+            header.classList.toggle('expanded');
+            if (content.style.maxHeight) {
+                content.style.maxHeight = null;
+                // Colapsar todas las semanas dentro de la fase al colapsar la fase
+                const weeks = content.querySelectorAll('.week-details');
+                weeks.forEach(weekDetail => {
+                    weekDetail.style.maxHeight = null;
+                    const weekHeader = weekDetail.previousElementSibling;
+                    if (weekHeader) {
+                        weekHeader.classList.remove('expanded');
+                    }
+                });
+            } else {
+                content.style.maxHeight = content.scrollHeight + "px";
+            }
+        }
+
+        function toggleWeek(headerElement) {
+            const weekDetails = headerElement.nextElementSibling;
+            headerElement.classList.toggle('expanded');
+            if (weekDetails.style.maxHeight) {
+                weekDetails.style.maxHeight = null;
+            } else {
+                weekDetails.style.maxHeight = weekDetails.scrollHeight + "px";
+            }
+        }
+
+        // Expandir automáticamente la primera fase al cargar la página
+        document.addEventListener('DOMContentLoaded', (event) => {
+            togglePhase('phase1');
+        });
+    </script>
+</body>
+</html>
