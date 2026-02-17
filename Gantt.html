@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cronograma General de Trabajo de Tesis</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #3498db;
+            --secondary-green: #2ecc71;
+            --accent-yellow: #f1c40f;
+            --warning-red: #e74c3c;
+            --dark-heading: #2c3e50;
+            --text-color: #34495e;
+            --light-bg: #ecf0f1;
+            --white: #ffffff;
+            --border-light: #dce4e8;
+        }
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--light-bg);
+            color: var(--text-color);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 30px auto;
+            background: var(--white);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.1);
+            flex-grow: 1;
+        }
+
+        h1 {
+            font-family: 'Montserrat', sans-serif;
+            text-align: center;
+            color: var(--dark-heading);
+            margin-bottom: 40px;
+            font-size: 2.8em;
+            font-weight: 700;
+            position: relative;
+        }
+
+        h1::after {
+            content: '';
+            display: block;
+            width: 100px;
+            height: 5px;
+            background: var(--primary-blue);
+            margin: 15px auto 0;
+            border-radius: 3px;
+        }
+
+        /* Tabs de Fases */
+        .tab-menu {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap; /* Permite que las pestañas se envuelvan en pantallas pequeñas */
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--border-light);
+        }
+
+        .tab-button {
+            background-color: var(--light-bg);
+            color: var(--text-color);
+            border: none;
+            padding: 15px 25px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            margin: 0 5px -2px 5px; /* Ajuste para superponer el borde */
+            position: relative;
+        }
+
+        .tab-button:hover {
+            background-color: var(--border-light);
+            color: var(--primary-blue);
+        }
+
+        .tab-button.active {
+            background-color: var(--white);
+            color: var(--primary-blue);
+            border-bottom: 2px solid var(--white); /* Truco para "cortar" el borde inferior */
+            z-index: 1;
+            box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .tab-button.active.green { border-bottom-color: var(--secondary-green); color: var(--secondary-green);}
+        .tab-button.active.yellow { border-bottom-color: var(--accent-yellow); color: var(--accent-yellow);}
+        .tab-button.active.red { border-bottom-color: var(--warning-red); color: var(--warning-red);}
+
+        /* Contenido de cada Fase */
+        .tab-content {
+            display: none;
+            padding: 20px 0;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .phase-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--primary-blue);
+            color: var(--white);
+            padding: 15px 25px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+        .phase-info.green { background-color: var(--secondary-green); }
+        .phase-info.yellow { background-color: var(--accent-yellow); }
+        .phase-info.red { background-color: var(--warning-red); }
+
+        .phase-info .date {
+            font-weight: normal;
+            opacity: 0.9;
+        }
+
+        /* Tarjetas de Semana */
+        .week-card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        .week-card {
+            background-color: var(--white);
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.07);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .week-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .week-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background-color: var(--primary-blue); /* Default */
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+        }
+        .week-card.green::before { background-color: var(--secondary-green); }
+        .week-card.yellow::before { background-color: var(--accent-yellow); }
+        .week-card.red::before { background-color: var(--warning-red); }
+
+
+        .week-card h3 {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--dark-heading);
+            font-size: 1.5em;
+            margin-top: 15px; /* Espacio para el borde superior */
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 1px dashed var(--border-light);
+        }
+
+        .week-card .date {
+            background-color: #e8f6fd;
+            color: var(--primary-blue);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+            display: inline-block; /* Para que el padding funcione bien */
+        }
+
+        .week-card h4 {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--primary-blue);
+            font-size: 1.1em;
+            margin-top: 20px;
+            margin-bottom: 8px;
+        }
+
+        .week-card ul {
+            list-style: none;
+            padding: 0;
+            margin-left: 0;
+            flex-grow: 1; /* Para que la lista ocupe el espacio restante */
+        }
+
+        .week-card ul li {
+            position: relative;
+            padding-left: 25px;
+            margin-bottom: 8px;
+            color: var(--text-color);
+        }
+
+        .week-card ul li::before {
+            content: '✓'; /* O '•' si prefieres */
+            color: var(--secondary-green);
+            font-size: 1.2em;
+            position: absolute;
+            left: 0;
+            top: -2px;
+            font-weight: bold;
+        }
+
+        .deliverable {
+            background-color: #f0f8ff;
+            border-left: 5px solid var(--primary-blue);
+            padding: 12px 18px;
+            margin-top: 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            color: var(--dark-heading);
+            font-size: 0.95em;
+        }
+
+        /* Resumen por Evaluación */
+        .summary {
+            margin-top: 50px;
+            padding: 30px;
+            background-color: var(--primary-blue);
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            color: var(--white);
+        }
+
+        .summary h2 {
+            font-family: 'Montserrat', sans-serif;
+            text-align: center;
+            color: var(--white);
+            margin-bottom: 25px;
+            font-size: 2em;
+        }
+
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .summary-table th, .summary-table td {
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 12px 15px;
+            text-align: left;
+            font-size: 1.1em;
+        }
+
+        .summary-table th {
+            background-color: rgba(0, 0, 0, 0.2);
+            color: var(--white);
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .summary-table tr:nth-child(even) {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+
+        .summary-table tr:hover {
+            background-color: rgba(0, 0, 0, 0.15);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .container {
+                margin: 20px auto;
+                padding: 20px;
+            }
+            h1 {
+                font-size: 2.2em;
+            }
+            .tab-button {
+                flex: 1 1 auto; /* Permite que los botones ocupen el ancho disponible */
+                margin: 0 2px -2px 2px;
+                font-size: 1em;
+                padding: 12px 15px;
+            }
+            .tab-menu {
+                margin-bottom: 20px;
+            }
+            .phase-info {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 10px 15px;
+                font-size: 1em;
+            }
+            .phase-info .date {
+                margin-top: 5px;
+            }
+            .week-card-grid {
+                grid-template-columns: 1fr; /* Una columna en móviles */
+                gap: 20px;
+            }
+            .week-card h3 {
+                font-size: 1.3em;
+            }
+            .summary {
+                padding: 20px;
+            }
+            .summary-table th, .summary-table td {
+                font-size: 0.9em;
+                padding: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .tab-button {
+                font-size: 0.9em;
+                padding: 10px 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Cronograma General de Trabajo de Tesis</h1>
+
+        <div class="tab-menu">
+            <button class="tab-button active green" onclick="openPhase(event, 'phase1Content')">FASE 1</button>
+            <button class="tab-button yellow" onclick="openPhase(event, 'phase2Content')">FASE 2</button>
+            <button class="tab-button red" onclick="openPhase(event, 'phase3Content')">FASE 3</button>
+        </div>
+
+        <!-- Contenido de la FASE 1 -->
+        <div id="phase1Content" class="tab-content active">
+            <div class="phase-info green">
+                <span>🟢 FASE 1 — Pre-Capítulo 1</span>
+                <span class="date">Entrega: 4–13 de marzo</span>
+            </div>
+            <div class="week-card-grid">
+                <div class="week-card green">
+                    <h3>🔹 Semana 1</h3>
+                    <span class="date">📆 17 – 23 febrero</span>
+                    <h4>Objetivo semanal:</h4>
+                    <p>Tener redactado y revisado el 70% de la primera parte del documento.</p>
+                    <h4>Actividades:</h4>
+                    <ul>
+                        <li>Redacción final de la Introducción</li>
+                        <li>Redacción formal de la Justificación (técnica, económica y ambiental)</li>
+                        <li>Ajuste definitivo de Objetivo General y Objetivos Específicos</li>
+                        <li>Redacción final de la Hipótesis</li>
+                        <li>Redacción de Alcances y Limitaciones</li>
+                        <li>Revisión de coherencia interna (alineación preguntas–objetivos–hipótesis)</li>
+                        <li>Organización de referencias en Zotero</li>
+                    </ul>
+                    <p class="deliverable">Entregable medible: Documento preliminar completo al 70%.</p>
+                </div>
+
+                <div class="week-card green">
+                    <h3>🔹 Semana 2</h3>
+                    <span class="date">📆 24 febrero – 2 marzo</span>
+                    <h4>Objetivo semanal:</h4>
+                    <p>Documento terminado y listo para revisión.</p>
+                    <h4>Actividades:</h4>
+                    <ul>
+                        <li>Corrección de estilo académico</li>
+                        <li>Revisión ortográfica y técnica</li>
+                        <li>Inserción correcta de citas y bibliografía</li>
+                        <li>Ajuste de formato institucional</li>
+                        <li>Generación de índice automático</li>
+                        <li>Revisión final PDF</li>
+                    </ul>
+                    <p class="deliverable">Entregable medible: Versión final lista para entregar (100%).</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contenido de la FASE 2 -->
+        <div id="phase2Content" class="tab-content">
+            <div class="phase-info yellow">
+                <span>🟡 FASE 2 — Capítulo 1</span>
+                <span class="date">Estado del Arte + Marco Teórico | Evaluación: 4 – 11 mayo</span>
+            </div>
+            <div class="week-card-grid">
+                <div class="week-card yellow">
+                    <h3>🔹 Semana 3</h3>
+                    <span class="date">📆 3 – 9 marzo</span>
+                    <h4>Objetivo semanal:</h4>
+                    <p>Estructura completa del Estado del Arte.</p>
+                    <h4>Actividades:</h4>
+                    <ul>
+                        <li>Búsqueda de artículos científicos (SPWM vs SVPWM)</li>
+                        <li>Búsqueda de investigaciones sobre inversores multiconfiguración</li>
+                        <li>Selección de 8–12 referencias técnicas</li>
+                        <li>Organización temática del capítulo</li>
+                    </ul>
+                    <p class="deliverable">Entregable medible: Esquema estructurado del capítulo con referencias clasificadas.</p>
+                </div>
+
+                <div class="week-card yellow">
+                    <h3>🔹 Semana 4</h3>
+                    <span class="date">📆 10 – 16 marzo</span>
+                    <h4>Objetivo semanal:</h4>
+                    <p>Redacción del 50% del Estado del Arte.</p>
+                    <h4>Actividades:</h4>
+                    <ul>
+                        <li>Redacción sección SPWM</li>
+                        <li>Redacción sección SVPWM</li>
+                        <li>Redacción comparativas técnicas reportadas</li>
+                        <li>Integración de citas académicas</li>
+                    </ul>
+                    <p class="deliverable">Entregable medible: Estado del arte al 50%.</p>
+                </div>
+
+                <div class="week-card yellow">
+                    <h3>🔹 Semana 5</h3>
+                    <span class="date">📆 17 – 23 marzo</span>
+                    <h4>Objetivo semanal:</h4>
+                    <p>Estado del Arte terminado.</p>
+                    <h4>Actividades:</h4>
+                    <ul>
+                        <li>Redacción final</li>
+                        <li>Comparativa crítica</li>
+                        <li>Identificación del vacío tecnológico</li>
+                        <li>Revisión de citas</li>
+                    </ul>
+                    <p class="deliverable">Entregable medible: Estado del Arte completo.</p>
+                </div>
+
+                <div class="week-card yellow">
+                    <h3>🔹 Semana 6</h3>
+                    <span class="date">📆 24 – 30 marzo</span>
+                    <h4>Objetivo semanal:</h4>
+                    <p>Estructura del Marco Teórico.</p>
+                    <h4>Actividades:</h4>
+                    <ul>
+                        <li>Definir secciones:</li>
+                        <ul>
+                            <li>Conversión DC-AC</li>
+                            <li>Modulación</li>
+                            <li>THD</li>
+                            <li>FP</li>
+                            <li>Regulación</li>
+                            <li>Sistemas trifásicos</li>
+                        </ul>
+                        <li>Organización de ecuaciones y fundamentos</li>
+                    </ul>
+                    <p class="deliverable">Entregable medible: Esquema formal del marco teórico.</p>
+                </div>
+
+                <div class="week-card yellow">
+                    <h3>🔹 Semana 7</h3>
+                    <span class="date">📆 31 marzo – 6 abril</span>
+                    <h4>Objetivo semanal:</h4>
+                    <p>Redacción 50% del Marco Teórico.</p>
+                    <p class="deliverable">Entregable medible: Avance del 50% del Marco Teórico.</p>
+                </div>
+
+                <div class="week-card yellow">
+                    <h3>🔹 Semana 8</h3>
+                    <span class="date">📆 7 – 13 abril</span>
+                    <h4>Objetivo semanal:</h4>
+                    <p>Marco Teórico completo.</p>
+                    <p class="deliverable">Entregable medible: Marco Teórico completo.</p>
+                </div>
+
+                <div class="week-card yellow">
+                    <h3>🔹 Semana 9</h3>
+                    <span class="date">📆 14 – 20 abril</span>
+                    <h4>Objetivo semanal:</h4>
+                    <p>Revisión técnica profunda de Capítulo 1.</p>
+                    <p class="deliverable">Entregable medible: Capítulo 1 revisado técnicamente.</p>
+                </div>
+
+                <div class="week-card yellow">
+                    <h3>🔹 Semana 10</h3>
+                    <span class="date">📆 21 – 27 abril</span>
+                    <h4>Objetivo semanal:</h4>
+                    <p>Correcciones finales y formato institucional.</p>
+                    <p class="deliverable">Entregable medible: Capítulo 1 con correcciones y formato listo.</p>
+                </div>
+
+                <div class="week-card yellow">
+                    <h3>🔹 Semana 11</h3>
+                    <span class="date">📆 28 abril – 3 mayo</span>
+                    <h4>Objetivo semanal:</h4>
+                    <p>Capítulo 1 listo para evaluación.</p>
+                    <p class="deliverable">Entregable medible: Capítulo 1 finalizado para evaluación.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contenido de la FASE 3 -->
+        <div id="phase3Content" class="tab-content">
+            <div class="phase-info red">
+                <span>🔴 FASE 3 — Metodología</span>
+                <span class="date">Evaluación: 15 – 22 mayo</span>
+            </div>
+            <div class="week-card-grid">
+                <div class="week-card red">
+                    <h3>🔹 Semana 12</h3>
+                    <span class="date">📆 4 – 10 mayo</span>
+                    <h4>Objetivo semanal:</h4>
+                    <p>Diseño estructural de la metodología.</p>
+                    <h4>Actividades:</h4>
+                    <ul>
+                        <li>Diagrama de bloques del sistema</li>
+                        <li>Definición de variables a medir</li>
+                        <li>Diseño experimental</li>
+                        <li>Procedimiento de pruebas</li>
+                    </ul>
+                    <p class="deliverable">Entregable medible: Diseño de metodología estructurado.</p>
+                </div>
+
+                <div class="week-card red">
+                    <h3>🔹 Semana 13</h3>
+                    <span class="date">📆 11 – 17 mayo</span>
+                    <h4>Objetivo semanal:</h4>
+                    <p>Redacción completa del capítulo de metodología.</p>
+                    <p class="deliverable">Entregable medible: Capítulo de metodología completo.</p>
+                </div>
+
+                <div class="week-card red">
+                    <h3>🔹 Semana 14</h3>
+                    <span class="date">📆 18 – 22 mayo</span>
+                    <h4>Objetivo semanal:</h4>
+                    <p>Corrección final y preparación de evaluación.</p>
+                    <p class="deliverable">Entregable medible: Metodología corregida y lista para evaluación.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="summary">
+            <h2>📊 Resumen por Evaluación</h2>
+            <table class="summary-table">
+                <thead>
+                    <tr>
+                        <th>Evaluación</th>
+                        <th>Fecha</th>
+                        <th>Debes tener</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1ª</td>
+                        <td>4–13 marzo</td>
+                        <td>Introducción + Justificación + Objetivos + Hipótesis + Alcances</td>
+                    </tr>
+                    <tr>
+                        <td>2ª</td>
+                        <td>4–11 mayo</td>
+                        <td>Capítulo 1 completo</td>
+                    </tr>
+                    <tr>
+                        <td>3ª</td>
+                        <td>15–22 mayo</td>
+                        <td>Metodología completa</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        function openPhase(evt, phaseName) {
+            let i, tabcontent, tabbuttons;
+
+            // Oculta todos los contenidos de las fases
+            tabcontent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+                tabcontent[i].classList.remove("active"); // Quita la clase 'active' para la animación
+            }
+
+            // Desactiva todos los botones de las fases
+            tabbuttons = document.getElementsByClassName("tab-button");
+            for (i = 0; i < tabbuttons.length; i++) {
+                tabbuttons[i].classList.remove("active");
+                tabbuttons[i].classList.remove("green");
+                tabbuttons[i].classList.remove("yellow");
+                tabbuttons[i].classList.remove("red");
+            }
+
+            // Muestra el contenido de la fase actual y activa su botón
+            document.getElementById(phaseName).style.display = "block";
+            document.getElementById(phaseName).classList.add("active"); // Añade 'active' para la animación
+            evt.currentTarget.classList.add("active");
+
+            // Añade la clase de color al botón activo
+            if (phaseName === 'phase1Content') {
+                evt.currentTarget.classList.add("green");
+            } else if (phaseName === 'phase2Content') {
+                evt.currentTarget.classList.add("yellow");
+            } else if (phaseName === 'phase3Content') {
+                evt.currentTarget.classList.add("red");
+            }
+        }
+
+        // Abrir la primera fase por defecto al cargar la página
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelector('.tab-button.active').click();
+        });
+    </script>
+</body>
+</html>
